@@ -90,40 +90,6 @@ This project implements a **production-style data engineering pipeline** for an 
 
 ---
 
-## 📂 Project Structure
 
 
-E-Commerce-Analytics-Platform/
-│
-├── dags/
-│ ├── batch_pipeline.py
-│
-├── notebooks/
-│ ├── run_bronze.py
-│ ├── run_silver.py
-│ ├── run_gold.py
-│
-├── airflow-docker/
-│ ├── dags/
-│ ├── Dockerfile
-│ ├── requirements.txt
-│
-├── config/
-│ ├── table_config.py
-│
-└── README.md
 
-
----
-
-## 🚀 Airflow DAG (OOP Design)
-
-- Implemented using class-based design
-- Parameterized execution using:
-
-```json
-{
-  "batch_number": "2"
-}
-DAG Flow
-move_s3 → S3 sensor → Bronze → Silver → Gold → Notify
