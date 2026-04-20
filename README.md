@@ -11,68 +11,121 @@
 
 ## 📌 Overview
 
-This project implements a **production-style data engineering pipeline** for an e-commerce platform using:
+This project demonstrates a **production-grade data engineering pipeline** for an e-commerce platform.
 
-- Batch processing (incremental loads)
-- Lakehouse architecture (Bronze → Silver → Gold)
-- Workflow orchestration with Airflow (Astro + Docker)
-- Cloud storage (AWS S3)
-- Databricks for distributed processing
+It simulates real-world data ingestion, transformation, and analytics using:
+
+- 🧱 **Lakehouse Architecture (Bronze → Silver → Gold)**
+- 🔄 **Batch processing with incremental loads**
+- ⚙️ **Workflow orchestration using Apache Airflow (Astro + Docker)**
+- ☁️ **Cloud storage using AWS S3**
+- ⚡ **Distributed processing using Databricks (PySpark)**
 
 ---
 
-## 🏗️ Architecture
+# 🏗️ Architecture (with Icons)
 
-         ┌──────────────┐
-         │  Source Data │
-         │ (CSV files)  │
-         └──────┬───────┘
+    🧾 Source Data (CSV Files)
                 │
                 ▼
-    ┌──────────────────────┐
-    │   S3 (Staging Area)  │
-    └─────────┬────────────┘
-              │
-              ▼
-    ┌──────────────────────┐
-    │ Airflow (Astro + EC2)│
-    │  - Move Files        │
-    │  - Sensors           │
-    │  - Trigger Jobs      │
-    └─────────┬────────────┘
-              │
-              ▼
-    ┌──────────────────────┐
-    │ Databricks (ETL)     │
-    │ Bronze → Silver → Gold│
-    └─────────┬────────────┘
-              │
-              ▼
-    ┌──────────────────────┐
-    │   Delta Lake Tables  │
-    └─────────┬────────────┘
-              │
-              ▼
-    ┌──────────────────────┐
-    │   Analytics Layer    │
-    │ (Reporting / BI)     │
-    └──────────────────────┘
+    ☁️ AWS S3 (Staging Layer)
+                │
+                ▼
+    🔄 Airflow (Astro + Docker on EC2)
+    ├── 📦 Move Files (S3 → Raw)
+    ├── ⏳ S3 Sensor (wait for files)
+    ├── 🚀 Trigger Databricks Jobs
+    └── 🔔 SNS Notifications
+                │
+                ▼
+    ⚡ Databricks (PySpark Processing)
+    ├── 🟤 Bronze Layer (Raw Ingestion)
+    ├── ⚪ Silver Layer (Cleaning & Joins)
+    └── 🟡 Gold Layer (Aggregations & KPIs)
+                │
+                ▼
+    🧊 Delta Lake Tables (S3)
+                │
+                ▼
+    📊 Analytics / Reporting Layer
+
+---
+
+## 🧠 Architecture Explanation
+
+### 🧾 Source Layer
+- Raw CSV files represent transactional e-commerce data
+- Data is uploaded in batches
+
+---
+
+### ☁️ S3 Staging Layer
+- Initial landing zone for raw files
+- Organized by batch:
+
+staging/batch_1/
+staging/batch_2/
+
+
+---
+
+### 🔄 Airflow Orchestration (Astro on EC2)
+
+Airflow manages the entire pipeline:
+
+- 📦 Moves files from **staging → raw**
+- ⏳ Waits for files using `S3KeySensor`
+- 🚀 Triggers Databricks jobs
+- 🔔 Sends success/failure notifications via SNS
+
+---
+
+### ⚡ Databricks Processing (ETL)
+
+#### 🟤 Bronze Layer
+- Raw ingestion
+- Schema alignment
+- No transformations
+
+#### ⚪ Silver Layer
+- Data cleaning
+- Standardization
+- Joins across tables
+
+#### 🟡 Gold Layer
+- Aggregations
+- KPIs (sales, revenue, etc.)
+- Analytics-ready data
+
+---
+
+### 🧊 Delta Lake
+- Stores processed data in S3
+- Supports:
+- ACID transactions
+- Schema evolution
+- Time travel
+
+---
+
+### 📊 Analytics Layer
+- Final datasets used for:
+- Dashboards
+- BI tools
+- Business insights
 
 ---
 
 ## 🔄 Data Flow
 
-1. Raw data arrives in **S3 staging bucket**
-2. Airflow DAG:
-   - Moves files → raw layer
-   - Waits using `S3KeySensor`
-3. Airflow triggers **Databricks jobs**
-4. Data is processed through:
-   - Bronze (raw ingestion)
-   - Silver (cleaned data)
-   - Gold (business metrics)
-5. Notifications sent via **SNS**
-6. Final data ready for analytics
+1. Upload batch data → S3 staging
+2. Airflow DAG starts
+3. Move files → raw layer
+4. Sensor waits for availability
+5. Trigger Databricks:
+ - Bronze → Silver → Gold
+6. Send SNS notification
+7. Data ready for analytics
 
 ---
 
@@ -80,16 +133,12 @@ This project implements a **production-style data engineering pipeline** for an 
 
 | Layer | Tools |
 |------|------|
-| Orchestration | Apache Airflow (Astro CLI + Docker) |
+| Orchestration | Apache Airflow (Astro + Docker) |
 | Processing | Databricks (PySpark) |
 | Storage | AWS S3 |
-| Data Format | Delta Lake |
+| Format | Delta Lake |
 | Language | Python |
-| Notifications | AWS SNS |
-| Infrastructure | AWS EC2 |
+| Alerts | AWS SNS |
+| Infra | AWS EC2 |
 
 ---
-
-
-
-
